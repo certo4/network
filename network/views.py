@@ -70,6 +70,7 @@ def register(request):
         return render(request, "network/register.html")
 
 
+# Function to render the new post form page
 @login_required
 def new_post(request):
     new_post_form = NewPost()
@@ -78,6 +79,7 @@ def new_post(request):
     })
 
 
+# Function that will create post in the DB
 @login_required
 def create_post(request):
     form = NewPost(request.POST)
@@ -100,6 +102,8 @@ def create_post(request):
         return HttpResponseRedirect(reverse("new-post"))
 
 
+# Function that when given a requests and a number of posts
+# will create a paginator to display posts
 def render_with_pagination(request, posts):
     
     # Get current page number from the URL parameter page

@@ -1,11 +1,17 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
     {% for post in page %}
         <div>
             <h2><a href="#">{{ post.poster }}</a></h2>
-            <p>{{ post.content }}</p>
-            <p>{{ post.timestamp }}</p>
+
+            {# Show edit button when user is authenticated #}
+            {% if user.is_authenticated %}
+                <button class="edit" data-post="{{ post.id }}">Edit</button>
+            {% endif %}
+            <p class="content" data-post="{{ post.id }}">{{ post.content }}</p>
+            <p class="timestamp">{{ post.timestamp }}</p>
         </div><br>
     {% endfor %}
 
