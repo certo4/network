@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -10,7 +11,11 @@ from .forms import NewPost
 
 
 def index(request):
-    return render(request, "network/index.html")
+
+    # Get all posts
+    posts = Post.objects.all()
+
+    return render_with_pagination(request, posts)
 
 
 def login_view(request):
@@ -93,3 +98,20 @@ def create_post(request):
 
         # Redirect to create a new post form
         return HttpResponseRedirect(reverse("new-post"))
+
+
+def render_with_pagination(request, posts):
+    
+    # Get current page number from the URL parameter page
+    page_number = request.GET.get('page', 1)
+    
+    # Create a paginator with posts object
+    paginator = Paginator(posts, 2) # TODO: Change to 10 once done
+    
+    # Get the current page's posts
+    page = paginator.page(page_number)
+
+    return render(request, "network/index.html", {
+        "page": page
+    })
+
