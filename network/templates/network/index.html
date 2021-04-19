@@ -9,12 +9,14 @@
             {# Show edit button when user is authenticated #}
             {% if user.is_authenticated %}
                 <button class="edit" data-post="{{ post.id }}">Edit</button>
+                <button class="like" data-post="{{ post.id }}"></button>
             {% endif %}
             <p class="content" data-post="{{ post.id }}">{{ post.content }}</p>
             <p class="timestamp">{{ post.timestamp }}</p>
         </div><br>
     {% endfor %}
 
+    {# Paginator code #}
     <nav aria-label="...">
         <ul class="pagination">
             {% if page.has_previous %}

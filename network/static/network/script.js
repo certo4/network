@@ -20,6 +20,23 @@ document.addEventListener('DOMContentLoaded', function() {
             
         });
     });
+
+    // Selecting all like buttons
+    document.querySelectorAll('.like').forEach(likeButton => {
+
+        // Adding event listeners to all edit buttons
+        likeButton.addEventListener('click', function() {
+
+            // Getting ID from data attribute
+            const postId = likeButton.dataset.post;
+
+            // Flush
+
+            // Get request on whether it's liked and create button from that
+
+
+        });
+    });
 });
 
 
