@@ -16,7 +16,7 @@ from .forms import NewPost
 def index(request):
 
     # Get all posts
-    posts = Post.objects.all()
+    posts = Post.objects.order_by("-timestamp").all()
 
     return render_with_pagination(request, posts)
 
@@ -77,7 +77,7 @@ def register(request):
 def profile(request):
 
     # Get all posts from current user
-    posts = Post.objects.filter(poster=request.user)
+    posts = Post.objects.filter(poster=request.user).order_by("-timestamp").all()
 
     return render_with_pagination(request, posts)
 
@@ -158,3 +158,50 @@ def post(request, post_id):
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
+
+def counter(request, post_id):
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return post contents
+    if request.method == "GET":
+        return JsonResponse({"like_counter": post.liked_by.count()})
+
+    # Update whether post has been edited or liked/unliked
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        counter_change = data.get("counter_change")
+        if counter_change is not None: 
+            if counter_change == 'increase':
+                post.liked_by.add(request.user)
+            else:
+                post.liked_by.remove(request.user)
+        post.save()
+        return HttpResponse(status=204)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+
+# Check if logged in user has liked post
+@login_required
+def liked_post(request, post_id):
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    # Return post contents
+    if request.method == "GET":
+        if request.user in post.liked_by.all():
+            return JsonResponse({"liked": True})
+        else:
+            return JsonResponse({"liked": False})

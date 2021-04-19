@@ -3,10 +3,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Selecting all edit buttons
     document.querySelectorAll('.edit').forEach(editButton => {
 
-        // Adding event listeners to all edit buttons
+        // Adding click behavior to edit buttons
         editButton.addEventListener('click', function() {
 
+            // Hide edit button while editing textarea
             this.style.display = 'none';
+            
             // Getting ID from data attribute
             const postId = editButton.dataset.post;
 
@@ -23,24 +25,92 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Selecting all like buttons
     document.querySelectorAll('.like').forEach(likeButton => {
+        
+        // Getting postId and current user from data attribute
+        const postId = likeButton.dataset.post;
+        const currentUser = likeButton.dataset.user;
+        
+        // Display like button and get liked status of current user
+        const isLiked = displayLikeButton(likeButton, postId);
 
-        // Adding event listeners to all edit buttons
+        // Adding click behavior to like buttons
         likeButton.addEventListener('click', function() {
 
-            // Getting ID from data attribute
-            const postId = likeButton.dataset.post;
-
-            // Flush
-
-            // Get request on whether it's liked and create button from that
-
+            clickLikeButton(postId, isLiked);
 
         });
     });
 });
 
+function clickLikeButton(postId, isLiked) {
+    
+    let counterChange = '';
+    if (isLiked) {
+        counterChange = 'decrease'
+    } else {
+        counterChange = 'increase'
+    }
 
-// Function that will update the nex post content in DB
+    // Updating counter
+    fetch(`/counter/${postId}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': CSRF
+        },
+        body: JSON.stringify({
+            counter_change: counterChange,
+        })
+    })
+
+    // Fetch new like count from db and display it
+    fetch(`/counter/${postId}`)
+    .then(response => response.json())
+    .then(post => {
+
+        // Getting post content element
+        const counterElement = document.querySelector(`.like_counter[data-post="${postId}"]`);
+        const likeButton = document.querySelector(`.like[data-post="${postId}"]`);
+        
+        // Display new content
+        counterElement.innerHTML = post.like_counter;
+        
+        // Update like button appearance
+        void displayLikeButton(likeButton, postId);
+
+    });
+}
+
+// Function to change the label of the like button
+function displayLikeButton(likeButton, postId) {
+
+    // Flushing the default values
+    likeButton.innerHTML = '';
+
+    // Fetch like state from post on DB
+    fetch(`/liked/${postId}`)
+    .then(response => response.json())
+    .then(post => {
+
+        // Change button label and update global LIKED status
+        if (post.liked) {
+
+            // If post is liked, display unlike
+            likeButton.innerHTML = 'Unlike';
+            return true;
+
+        } else {
+            
+            // Else display like
+            likeButton.innerHTML = 'Like';
+            return false;
+
+        }
+
+    });
+}
+
+// Function to update the post content in DB
+// with the new information from the textarea
 function editPost(postId) {
     
     // Getting new content

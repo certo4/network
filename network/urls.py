@@ -14,4 +14,6 @@ urlpatterns = [
     # API Routes
     path("create-post", views.create_post, name="create-post"),
     path("posts/<int:post_id>", views.post, name="post"),
+    path("counter/<int:post_id>", views.counter, name="counter"),
+    path("liked/<int:post_id>", views.liked_post, name="liked")
 ]
