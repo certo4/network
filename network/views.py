@@ -101,7 +101,7 @@ def create_post(request):
         # Create new post
         post = Post(
             content=form.cleaned_data["content"],
-            poster= request.user
+            poster=request.user
         )
         post.save()
 
@@ -117,13 +117,13 @@ def create_post(request):
 # Function that when given a requests and a number of posts
 # will create a paginator to display posts
 def render_with_pagination(request, posts):
-    
+
     # Get current page number from the URL parameter page
     page_number = request.GET.get('page', 1)
-    
+
     # Create a paginator with posts object
-    paginator = Paginator(posts, 2) # TODO: Change to 10 once done
-    
+    paginator = Paginator(posts, 10)
+
     # Get the current page's posts
     page = paginator.page(page_number)
 
@@ -159,6 +159,7 @@ def post(request, post_id):
             "error": "GET or PUT request required."
         }, status=400)
 
+
 def counter(request, post_id):
 
     # Query for requested post
@@ -175,7 +176,7 @@ def counter(request, post_id):
     elif request.method == "PUT":
         data = json.loads(request.body)
         counter_change = data.get("counter_change")
-        if counter_change is not None: 
+        if counter_change is not None:
             if counter_change == 'increase':
                 post.liked_by.add(request.user)
             else:
