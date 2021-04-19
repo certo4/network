@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Selecting all like counters
+    document.querySelectorAll('.like_counter').forEach(likeCounter => {
+
+        // Hide edit button while editing textarea
+        displayCounter(likeCounter);
+
+    });
+    
     // Selecting all edit buttons
     document.querySelectorAll('.edit').forEach(editButton => {
 
@@ -30,25 +38,44 @@ document.addEventListener('DOMContentLoaded', function() {
         const postId = likeButton.dataset.post;
         const currentUser = likeButton.dataset.user;
         
-        // Display like button and get liked status of current user
-        const isLiked = displayLikeButton(likeButton, postId);
+        // Display like button and get current button label
+        const isLikedLabel = displayLikeButton(likeButton, postId);
 
         // Adding click behavior to like buttons
         likeButton.addEventListener('click', function() {
 
-            clickLikeButton(postId, isLiked);
+            clickLikeButton(postId, isLikedLabel);
 
         });
     });
 });
 
-function clickLikeButton(postId, isLiked) {
+function displayCounter(likeCounter) {
+
+    // Getting post content element
+    const postId = likeCounter.dataset.post;
+    
+    // Flush old values
+    likeCounter.innerHTML = '';
+
+    fetch(`/counter/${postId}`)
+    .then(response => response.json())
+    .then(post => {
+                
+        // Display new counter
+        likeCounter.innerHTML = post.like_counter;
+    });
+}
+
+function clickLikeButton(postId, isLikedLabel) {
     
     let counterChange = '';
-    if (isLiked) {
-        counterChange = 'decrease'
+    if (isLikedLabel) {
+        counterChange = 'decrease';
+        console.log(isLikedLabel);
+
     } else {
-        counterChange = 'increase'
+        counterChange = 'increase';
     }
 
     // Updating counter
@@ -71,7 +98,7 @@ function clickLikeButton(postId, isLiked) {
         const counterElement = document.querySelector(`.like_counter[data-post="${postId}"]`);
         const likeButton = document.querySelector(`.like[data-post="${postId}"]`);
         
-        // Display new content
+        // Display new counter
         counterElement.innerHTML = post.like_counter;
         
         // Update like button appearance
@@ -103,7 +130,6 @@ function displayLikeButton(likeButton, postId) {
             // Else display like
             likeButton.innerHTML = 'Like';
             return false;
-
         }
 
     });

@@ -11,7 +11,7 @@
                 <button class="edit" data-post="{{ post.id }}">Edit</button>
                 <button class="like" data-post="{{ post.id }}" data-user="{{ user.username }}"></button>
             {% endif %}
-            <p class="like_counter" data-post="{{ post.id }}"></p>
+            <br><strong>Likes: </strong><p class="like_counter" data-post="{{ post.id }}"></p>
             <p class="content" data-post="{{ post.id }}">{{ post.content }}</p>
             <p class="timestamp">{{ post.timestamp }}</p>
         </div><br>
