@@ -32,6 +32,9 @@ function editPost(postId) {
     // Updating new post content
     fetch(`/posts/${postId}`, {
         method: 'PUT',
+        headers: {
+            'X-CSRFToken': CSRF
+        },
         body: JSON.stringify({
             content: new_post
         })

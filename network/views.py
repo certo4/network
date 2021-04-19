@@ -73,6 +73,15 @@ def register(request):
         return render(request, "network/register.html")
 
 
+# Function to display all posts from current user
+def profile(request):
+
+    # Get all posts from current user
+    posts = Post.objects.filter(poster=request.user)
+
+    return render_with_pagination(request, posts)
+
+
 # Function to render the new post form page
 @login_required
 def new_post(request):
@@ -123,7 +132,6 @@ def render_with_pagination(request, posts):
     })
 
 
-@csrf_exempt
 @login_required
 def post(request, post_id):
 
